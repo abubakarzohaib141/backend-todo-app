@@ -1,8 +1,12 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.config import settings
-from app.database import create_db_and_tables
+from app.database import create_db_and_tables, init_db
 from app.routes import auth, todo
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Create app
 app = FastAPI(

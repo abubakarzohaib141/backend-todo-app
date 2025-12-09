@@ -1,4 +1,4 @@
-from sqlmodel import Session, select, or_
+from sqlmodel import Session, select, or_, update
 from app.models.todo import Todo, TodoCreate, TodoUpdate, PriorityLevel
 from typing import Optional, List
 from datetime import datetime, timedelta
@@ -113,11 +113,25 @@ class TodoService:
 
     @staticmethod
     def mark_done(session: Session, todo_id: int, user_id: int) -> Todo:
-        return TodoService.update_todo(session, todo_id, user_id, TodoUpdate(completed=True))
+        # Direct update for better performance
+        statement = update(Todo).where(
+            (Todo.id == todo_id) & (Todo.user_id == user_id)
+        ).values(completed=True, updated_at=datetime.utcnow())
+        session.exec(statement)
+        session.commit()
+        # Fetch updated todo
+        return TodoService.get_todo_by_id(session, todo_id, user_id)
 
     @staticmethod
     def mark_undone(session: Session, todo_id: int, user_id: int) -> Todo:
-        return TodoService.update_todo(session, todo_id, user_id, TodoUpdate(completed=False))
+        # Direct update for better performance
+        statement = update(Todo).where(
+            (Todo.id == todo_id) & (Todo.user_id == user_id)
+        ).values(completed=False, updated_at=datetime.utcnow())
+        session.exec(statement)
+        session.commit()
+        # Fetch updated todo
+        return TodoService.get_todo_by_id(session, todo_id, user_id)
 
     @staticmethod
     def get_user_statistics(session: Session, user_id: int) -> dict:

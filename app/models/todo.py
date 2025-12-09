@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Index
 from typing import Optional, List
 from datetime import datetime
 from enum import Enum
@@ -13,6 +13,12 @@ class PriorityLevel(str, Enum):
 
 class Todo(SQLModel, table=True):
     __tablename__ = "todos"
+    __table_args__ = (
+        Index("idx_user_id", "user_id"),
+        Index("idx_user_completed", "user_id", "completed"),
+        Index("idx_user_id_priority", "user_id", "priority"),
+        Index("idx_user_id_created", "user_id", "created_at"),
+    )
 
     id: Optional[int] = Field(default=None, primary_key=True)
     user_id: int = Field(foreign_key="users.id")
