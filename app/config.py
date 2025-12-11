@@ -1,4 +1,5 @@
 from pydantic_settings import BaseSettings
+from pydantic import Field
 from typing import Optional
 
 
@@ -10,7 +11,7 @@ class Settings(BaseSettings):
     database_url: str = "sqlite:///./todos.db"
 
     # JWT
-    secret_key: str = "your-secret-key-change-this"
+    secret_key: str = Field(default="your-secret-key-change-this", alias="SECRET_KEY")
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
@@ -20,6 +21,7 @@ class Settings(BaseSettings):
     class Config:
         env_file = ".env"
         case_sensitive = False
+        populate_by_name = True
 
 
 settings = Settings()
